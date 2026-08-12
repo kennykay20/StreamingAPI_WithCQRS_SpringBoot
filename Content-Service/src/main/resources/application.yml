@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: ContentService
+
+  profiles:
+    active: dev
+
