@@ -1,0 +1,51 @@
+server:
+  port: 8084
+
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: encoding-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+            use:
+              type:
+                headers: false
+            value:
+              default:
+                type: com.streaming_app.EncodingService.Application.Events.VideoUploadedEvent
+
+      producer:
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+# Azure storage container config
+azure:
+  storage:
+    connection-string: ${AZURE_STORAGE_CONNECTION_STRING}
+    raw-container-name: raw-videos
+    encoded-container-name: encoded-videos
+    # account-name: ${AZURE_STORAGE_ACCOUNT_NAME}
+    # endpoint: https://${AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net
+
+#FFmpeg configuration
+ffmpeg:
+  path: ${FFMPEG_PATH:ffmpeg}
+
+#R
+encoding:
+  base-path: ${TEMP_DIR:C:/temp/encoding}
+  #base-path: ${TEMP_DIR:/tmp/encoding}
+
+#Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

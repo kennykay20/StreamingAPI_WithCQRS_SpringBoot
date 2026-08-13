@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: VideoService
+
+  profiles:
+    active: dev

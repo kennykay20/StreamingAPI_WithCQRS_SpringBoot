@@ -12,6 +12,6 @@ public abstract class BusinessException extends RuntimeException {
     }
 
     public HttpStatus getStatus() {
-        return  _status;
+        return _status;
     }
 }

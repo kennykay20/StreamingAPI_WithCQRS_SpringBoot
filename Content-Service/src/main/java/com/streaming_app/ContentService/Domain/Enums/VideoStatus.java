@@ -4,7 +4,7 @@ package com.streaming_app.ContentService.Domain.Enums;
  *
  * FLOW:
  * PENDING -> UPLOADED -> ENCODING -> ENCODED -> READY
- *                                            -> FAILED
+ *                                    REMOVED -> FAILED
  */
 public enum VideoStatus {
     PENDING, // movie added but not uploaded yet

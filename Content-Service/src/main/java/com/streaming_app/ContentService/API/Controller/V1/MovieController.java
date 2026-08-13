@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/Movie")
+@RequestMapping("/api/v1/movies")
 @RequiredArgsConstructor
 @Slf4j
 public class MovieController {

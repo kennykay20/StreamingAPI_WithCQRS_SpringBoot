@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
                 .body(
                         new ApiResponseDto<>(
                                 false,
-                                "An unexception error occur" + ex.getMessage(),
+                                "An unexceptional error occur " + ex.getMessage(),
                                 null,
                                 null,
                                 null
