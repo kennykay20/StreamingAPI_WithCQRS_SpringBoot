@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -152,7 +154,7 @@ public class EncodeVideoCommandHandler {
             generateMasterPlaylist(masterPlaylistPath);
             log.info("Master Playlist generated");
 
-            // Step 5: Upload all resources file to Blog-storage(Azure)
+            // Step 5: Upload all resources file to Blob-storage(Azure)
             String encodedPrefix =
                     "encoded/" + moviePublicId + "/";
             uploadEncodedFilesToBlob(
@@ -266,6 +268,14 @@ public class EncodeVideoCommandHandler {
     }
 
     private void encodeToHLS(String inputPath, String outputDirectory, int width, int height, int bitrate) {
+
+        log.info(
+                "Starting FFmpeg encoding: {}x{} @ {} kbps",
+                width,
+                height,
+                bitrate
+        );
+
         String playlistPath = outputDirectory + "/playlist.m3u8";
         String segmentPattern = outputDirectory + "/segment_%03d.ts";
 
@@ -288,8 +298,19 @@ public class EncodeVideoCommandHandler {
             );
 
             ProcessBuilder processBuilder = new ProcessBuilder(command);
-            processBuilder.redirectErrorStream(true);
+            processBuilder.inheritIO();
             Process process = processBuilder.start();
+
+//            try (BufferedReader reader = new BufferedReader(
+//                    new InputStreamReader(process.getInputStream())
+//            )) {
+//                String line;
+//
+//                while ((line = reader.readLine()) != null) {
+//                    log.info("FFmpeg: {}", line);
+//                }
+//            }
+
             int exitCode = process.waitFor();
             if(exitCode != 0) {
                 throw new RuntimeException(
@@ -297,6 +318,10 @@ public class EncodeVideoCommandHandler {
                         exitCode
                 );
             }
+            log.info(
+                    "FFmpeg process completed for {}p",
+                    height
+            );
         } catch (Exception e) {
             throw new RuntimeException(
                     "Interrupted exception",

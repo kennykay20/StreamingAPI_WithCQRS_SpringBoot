@@ -6,15 +6,24 @@ import com.streaming_app.EncodingService.Application.Events.VideoUploadedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class VideoUploadedConsumer {
 
+    private final ConsumerFactory<String, VideoUploadedEvent> consumerFactory;
     private final EncodeVideoCommandHandler encodeVideoCommandHandler;
 
+    public VideoUploadedConsumer(
+            EncodeVideoCommandHandler encodeVideoCommandHandler,
+            ConsumerFactory<String, VideoUploadedEvent> consumerFactory
+    ) {
+        this.consumerFactory = consumerFactory;
+        this.encodeVideoCommandHandler = encodeVideoCommandHandler;
+    }
     /**
      * Listens to video.uploaded Kafka topic.
      * Triggered when video service uploads a raw video to Blob
@@ -32,6 +41,13 @@ public class VideoUploadedConsumer {
             groupId = "encoding-service-group"
     )
     public void consumeVideoUploadedEvent(VideoUploadedEvent event){
+
+        log.info(
+                "Kafka max.poll.interval.ms = {}",
+                consumerFactory
+                        .getConfigurationProperties()
+                        .get("max.poll.interval.ms")
+        );
         log.info(
                 "Consumed videoUploadedEvent for movieId: {} file: {}",
                 event.moviePublicId(),

@@ -7,23 +7,21 @@ spring:
     consumer:
       group-id: encoding-service-group
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring:
-          json:
-            trusted:
-              packages: "*"
-            use:
-              type:
-                headers: false
-            value:
-              default:
-                type: com.streaming_app.EncodingService.Application.Events.VideoUploadedEvent
 
-      producer:
-        key-serializer: org.apache.kafka.common.serialization.StringSerializer
-        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+      properties:
+        "[spring.json.trusted.packages]": "com.streaming_app.EncodingService.Application.Events"
+        "[spring.json.value.default.type]": "com.streaming_app.EncodingService.Application.Events.VideoUploadedEvent"
+        "[spring.json.use.type.headers]": false
+        "[max.poll.interval.ms]": 7200000
+        "[max.poll.records]": 1
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 # Azure storage container config
 azure:

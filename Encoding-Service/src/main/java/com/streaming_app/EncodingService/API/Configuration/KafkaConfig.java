@@ -1,8 +1,8 @@
 package com.streaming_app.EncodingService.API.Configuration;
 
-import com.azure.core.util.serializer.JsonSerializer;
+//import com.azure.core.util.serializer.JsonSerializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import com.streaming_app.EncodingService.Application.Events.VideoEncodedEvent;
-import com.streaming_app.EncodingService.Application.Events.VideoUploadedEvent;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
