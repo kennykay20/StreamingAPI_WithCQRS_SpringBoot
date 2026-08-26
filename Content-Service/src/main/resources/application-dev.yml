@@ -9,6 +9,22 @@ spring:
     username: root
     password: root
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: content-service-group
+      auto-offset-reset: earliest
+
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+      properties:
+        "[spring.json.trusted.packages]": "com.streaming_app.ContentService.Application.Events"
+        "[spring.json.use.type.headers]": false
+        "[max.poll.interval.ms]": 7200000
+        "[max.poll.records]": 1
+
   # JPA CONFIGURE
   jpa:
     hibernate:
@@ -17,3 +33,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+
+
+#Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

@@ -1,0 +1,44 @@
+server:
+  port: 8085
+
+spring:
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: streaming-service-group
+      auto-offset-reset: earliest
+
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+      properties:
+        "[spring.json.trusted.packages]": "com.streaming_app.StreamingService.Application.Events"
+        "[spring.json.value.default.type]": "com.streaming_app.StreamingService.Application.Events.VideoEncodedEvent"
+        "[spring.json.use.type.headers]": false
+        "[max.poll.interval.ms]": 7200000
+        "[max.poll.records]": 1
+
+# Azure storage container config
+azure:
+  storage:
+    connection-string: ${AZURE_STORAGE_CONNECTION_STRING}
+    raw-container-name: raw-videos
+    encoded-container-name: encoded-videos
+
+    # 60 minutes in milliseconds
+    presigned-url-expiry: 3600000
+
+
+#Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
