@@ -17,11 +17,11 @@ spring:
 
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
 
       properties:
-        "[spring.json.trusted.packages]": "com.streaming_app.ContentService.Application.Events"
-        "[spring.json.use.type.headers]": false
+#        "[spring.json.trusted.packages]": "com.streaming_app.ContentService.Application.Events"
+#        "[spring.json.use.type.headers]": false
         "[max.poll.interval.ms]": 7200000
         "[max.poll.records]": 1
 

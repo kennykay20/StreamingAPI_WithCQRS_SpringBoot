@@ -19,9 +19,8 @@ public class VideoUploadedConsume {
     @KafkaListener(
             topics = "video.uploaded",
             groupId = "content-service-group",
-            properties = {
-                    "spring.json.value.default.type=com.streaming_app.ContentService.Application.Events.VideoUploadedEvent"
-            }
+            containerFactory =
+                    "videoUploadedKafkaListenerContainerFactory"
     )
     public void consumeVideoUploadedEvent(
             VideoUploadedEvent event

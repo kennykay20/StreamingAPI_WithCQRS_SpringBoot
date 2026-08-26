@@ -19,9 +19,8 @@ public class VideoEncodedConsumer {
     @KafkaListener(
             topics = "video.encoded",
             groupId = "content-service-group",
-            properties = {
-                    "spring.json.value.default.type=com.streaming_app.ContentService.Application.Events.VideoEncodedEvent"
-            }
+            containerFactory =
+                    "videoEncodedKafkaListenerContainerFactory"
     )
 
     public void consumeVideoEncodedEvent(
