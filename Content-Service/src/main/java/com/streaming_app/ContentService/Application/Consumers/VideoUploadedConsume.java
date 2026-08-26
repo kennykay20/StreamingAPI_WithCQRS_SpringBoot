@@ -38,6 +38,11 @@ public class VideoUploadedConsume {
                 event.videoKey()
            );
 
+           log.info(
+                   "Video key is : {}",
+                   request.getVideoKey()
+           );
+
            var command = new UpdateMovieVideoKeyCommand(
                    request
            );

@@ -38,6 +38,9 @@ public class VideoEncodedConsumer {
                     event.errorMessage()
             );
 
+            /*
+             * Call the failed handler to update the movie status to FAILED
+             */
             return;
         }
 

@@ -17,8 +17,8 @@ public class GetSignedPlaylistQueryHandler {
 
     private final BlobContainerClient encodedBlobContainerClient;
 
-    @Value("${azure.storage.presigned-url-expiry}")
-    private long presignedUrlExpiry;
+    @Value("${azure.storage.presigned-url-expiry-ms}")
+    private long presignedUrlExpiryMs;
 
     public GetSignedPlaylistQueryHandler(
         IMovieService movieService,
@@ -112,6 +112,11 @@ public class GetSignedPlaylistQueryHandler {
 
         String m3u8Content =
                 readFromBlob(playlistPath);
+
+        log.info(
+                "Original M3U8 content:\n{}",
+                m3u8Content
+        );
         /*
          * Rewrite segment references with signed URLs.
          */
@@ -174,6 +179,11 @@ public class GetSignedPlaylistQueryHandler {
 
             String trimmed = line.trim();
 
+            log.info(
+                    "Processing playlist line: [{}]",
+                    trimmed
+            );
+
             /*
              * Keep:
              *
@@ -184,7 +194,19 @@ public class GetSignedPlaylistQueryHandler {
              */
 
             // Skip empty lines and comments
-            if(trimmed.isEmpty() || trimmed.startsWith("#")) {
+            if (trimmed.isEmpty()) {
+
+                reWritten.append("\n");
+                continue;
+            }
+
+            // HLS directives
+            if(trimmed.startsWith("#")) {
+                log.info(
+                        "Keeping HLS directive/empty line: [{}]",
+                        trimmed
+                );
+
                 reWritten.append(line)
                          .append("\n");
                 continue;
@@ -199,17 +221,59 @@ public class GetSignedPlaylistQueryHandler {
              * encoded/{movieId}/720p/segment_000.ts
              */
 
+            // If it is already a full URL, leave it alone
+            if (trimmed.startsWith("http://")
+                    || trimmed.startsWith("https://")) {
+
+                reWritten.append(trimmed)
+                        .append("\n");
+                continue;
+            }
+
+            /*
+             * Safety check:
+             * If this looks like an HLS directive but
+             * is missing '#', don't generate a SAS URL.
+             */
+            if (trimmed.startsWith("EXT-")) {
+
+                log.warn(
+                        "Malformed HLS directive detected: [{}]",
+                        trimmed
+                );
+
+                reWritten
+                        .append("#")
+                        .append(trimmed)
+                        .append("\n");
+
+                continue;
+            }
+
             String fullKey = basePath + trimmed;
+
+            log.info(
+                    "Generating SAS URL for blob: {}",
+                    fullKey
+            );
+
             String signedUrl =
                     movieService.GeneratePresignedUrl(
                             fullKey,
-                            presignedUrlExpiry
+                            presignedUrlExpiryMs
                     );
 
             reWritten.append(signedUrl)
                      .append("\n");
         }
 
-        return  reWritten.toString();
+        String result = reWritten.toString();
+
+        log.info(
+                "Rewritten M3U8 content:\n{}",
+                result
+        );
+
+        return result;
     }
 }

@@ -1,13 +1,9 @@
 package com.streaming_app.StreamingService.Application.CQRS.Features.Streams.Handlers.Queries;
 
-import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.sas.BlobSasPermission;
-import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.streaming_app.StreamingService.Application.CQRS.Features.Streams.Requests.Queries.GetStreamingURLQuery;
 import com.streaming_app.StreamingService.Application.Contracts.Infrastructure.Interfaces.ICacheService;
 import com.streaming_app.StreamingService.Application.Contracts.Infrastructure.Interfaces.IMovieService;
-import com.streaming_app.StreamingService.Application.Dtos.Requests.StreamingUrlRequestDto;
 import com.streaming_app.StreamingService.Application.Dtos.Responses.StreamingUrlResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,8 +27,8 @@ public class GetStreamingURLQueryHandler {
 
     private final BlobContainerClient encodedBlobContainerClient;
 
-    @Value("${azure.storage.presigned-url-expiry}")
-    private long presignedUrlExpiry;
+    @Value("${azure.storage.presigned-url-expiry-ms}")
+    private long presignedUrlExpiryMs;
 
     public GetStreamingURLQueryHandler(
             ICacheService cacheService,
@@ -94,7 +90,7 @@ public class GetStreamingURLQueryHandler {
                     movieId.toString(),
                     cacheUrl,
                     VIDEO_QUALITIES,
-                    presignedUrlExpiry
+                    presignedUrlExpiryMs
             );
         }
 
@@ -126,7 +122,7 @@ public class GetStreamingURLQueryHandler {
                 "Generate new presigned URL for movie: {}",
                 movieId
         );
-        streamingUrl = movieService.GeneratePresignedUrl(masterPlaylistKey, presignedUrlExpiry);
+        streamingUrl = movieService.GeneratePresignedUrl(masterPlaylistKey, presignedUrlExpiryMs);
 
         /*
          * Step 4:
@@ -148,11 +144,16 @@ public class GetStreamingURLQueryHandler {
                 movieId
         );
 
+        long expiredInMinutes =
+                TimeUnit.MILLISECONDS.toMinutes(
+                        presignedUrlExpiryMs
+                );
+
         return new StreamingUrlResponseDto(
                 movieId.toString(),
                 streamingUrl,
                 VIDEO_QUALITIES,
-                presignedUrlExpiry
+                expiredInMinutes
         );
     }
 

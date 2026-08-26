@@ -33,7 +33,7 @@ azure:
     encoded-container-name: encoded-videos
 
     # 60 minutes in milliseconds
-    presigned-url-expiry: 3600000
+    presigned-url-expiry-ms: 3600000
 
 
 #Actuator

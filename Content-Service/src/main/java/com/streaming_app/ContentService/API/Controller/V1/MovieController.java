@@ -32,6 +32,7 @@ public class MovieController {
     private final GetMoviesByVideoStatusQueryHandler getGetMoviesByVideoStatusQueryHandler;
     private final GetMoviesBySearchQueryHandler getMoviesBySearchQueryHandler;
 
+
     @PostMapping
     public ResponseEntity<ApiResponseDto<MovieResponseDto>> addMovie(
             @Valid @RequestBody CreateMovieRequestDto requestDto) {

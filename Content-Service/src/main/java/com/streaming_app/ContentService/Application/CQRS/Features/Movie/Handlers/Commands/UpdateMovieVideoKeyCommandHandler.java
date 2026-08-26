@@ -24,7 +24,13 @@ public class UpdateMovieVideoKeyCommandHandler {
         var publicId = request.updateRequest().getPublicId();
 
 
-        log.info("Update movie video key and status");
+        log.info(
+                "Update movie video key: {} and status: {} for movieId: {}",
+                videoKey,
+                VideoStatus.UPLOADED,
+                publicId
+        );
+
         var movie = movieRepository.findByPublicId(publicId)
                 .orElseThrow(() ->
                         new MovieNotFoundException("Movie not found")

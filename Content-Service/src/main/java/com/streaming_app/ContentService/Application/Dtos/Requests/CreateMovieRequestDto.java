@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class CreateMovieRequestDto {
     @NotBlank(message = "Title is required")
     private String title;
 
-    @Size()
+    @Size(min = 10, max = 40)
     private String description;
 
     @NotNull(message = "Genre is required")
@@ -30,4 +31,6 @@ public class CreateMovieRequestDto {
     private double rating;
     private String thumbnailUrl;
     private int durationMinutes;
+
+
 }
